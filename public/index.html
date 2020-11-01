@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mesto</title>
+  <link rel="stylesheet" href="./pages/index.css">
+</head>
+<body>
+  <div class="root">
+    <header class="header root__section">
+      <img src="./images/logo.svg" alt="mesto logo" class="logo">
+    </header>
+    <div class="profile root__section">
+      <div class="user-info">
+        <div class="user-info__photo"></div>
+        <div class="user-info__data">
+          <h1 class="user-info__name"></h1>
+          <p class="user-info__job"></p>
+          <button class="button user-info__edit-button">Edit</button>
+        </div>
+        <button class="button user-info__add-button">+</button>
+      </div>
+    </div>
+    <div class="places-list root__section">
+
+      <!-- Пример вёрстки карточки: -->
+
+      <!--<div class="place-card">
+        <div class="place-card__image" style="background-image: url(https://pictures.s3.yandex.net/frontend-developer/cards-compressed/kamchatka.jpg)">
+          <button class="place-card__delete-icon"></button>
+        </div>
+        <div class="place-card__description">
+          <h3 class="place-card__name">Камчатка</h3>
+          <button class="place-card__like-icon"></button>
+        </div>
+      </div>-->
+
+      <!-- конец примера. -->
+
+    </div>
+    <div class="popup popup__add-card">
+      <div class="popup__content">
+        <img src="./images/close.svg" alt="" class="popup__close">
+        <h3 class="popup__title">Новое место</h3>
+        <form novalidate class="popup__form" name="new">
+            <input id="place" type="text" name="one" class="popup__input popup__input_type_name"  required minlength ="2" maxlength="30" placeholder="Название">
+            <span id="error-place" class="popup__input-error"></span>
+            <input id="link" type="url" name="two" class="popup__input popup__input_type_link-url" required placeholder="Ссылка на картинку">
+            <span id="error-link" class="popup__input-error"></span>
+            <button type class="button popup__button popup__button_type-add" disabled="true">+</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup popup__edit-info">
+      <div class="popup__content">
+        <img src="./images/close.svg" alt="" class="popup__close">
+        <h3 class="popup__title">Редактировать профиль</h3>
+        <form novalidate class="popup__form" name="edit">
+            <input id="name"type="text" name="one"  class="popup__input" required minlength ="2" maxlength="30" placeholder="Имя">
+            <span id="error-name" class="popup__input-error"></span>
+            <input id="about" type="text" name="two" class="popup__input" required minlength ="2" maxlength="30" placeholder="О себе">
+            <span id="error-about" class="popup__input-error"></span>
+            <button type class="button popup__button popup__button_type-edit popup__button_type-validated">Сохранить</button>
+        </form>
+      </div>
+    </div>
+    <div class="popup popup__image">
+      <div class="popup__image-content">
+        <img src alt="Изображение" class="popup__big-image">
+        <img src="./images/close.svg" alt="" class="popup__close">
+      </div>
+    </div>
+  </div>
+  <script src='./scripts/Api.js'></script>
+  <script src='./scripts/FormValidator.js'></script>
+  <script src='./scripts/CardList.js'></script>
+  <script src='./scripts/Card.js'></script>
+  <script src='./scripts/Popup.js'></script>
+  <script src='./scripts/initialCards.js'></script>
+  <script src='./scripts/UserInfo.js'></script>
+  <script src='./scripts/script.js'></script>
+</body>
+</html>
