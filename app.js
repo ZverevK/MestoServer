@@ -1,5 +1,4 @@
 const express = require('express');
-const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cardsRouter = require('./routes/cards');
@@ -18,7 +17,6 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', usersRouter);
 app.use('/', cardsRouter);
 app.use('/', (req, res) => {
