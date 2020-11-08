@@ -21,7 +21,6 @@ router.get('/users/:id', (req, res) => {
   fs.readFile(path.join(__dirname, '..', 'data', 'users.json'))
     .then((data) => {
       const users = JSON.parse(data);
-      // eslint-disable-next-line no-underscore-dangle
       const element = users.find((el) => el._id === req.params.id);
       if (element) {
         res.status(200).json(element);
