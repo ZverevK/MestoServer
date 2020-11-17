@@ -3,7 +3,7 @@ const Card = require('../models/card');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(400).send({ message: `Ошибка сервера ${err}` }));
+    .catch((err) => res.status(400).send({ message: `Неверный запрос ${err}` }));
 };
 
 module.exports.deleteCard = (req, res) => {

@@ -3,7 +3,7 @@ const User = require('../models/user');
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(500).send({ message: `Ошибка сервера ${err}` }));
+    .catch((err) => res.status(400).send({ message: `Неверный запрос ${err}` }));
 };
 
 module.exports.getUser = (req, res) => {
@@ -15,7 +15,7 @@ module.exports.getUser = (req, res) => {
       return res.status(200).send(data);
     })
     .catch((err) => {
-      res.status(500).send({ message: `Ошибка сервера ${err}` });
+      res.status(400).send({ message: `Неверный запрос ${err}` });
     });
 };
 
