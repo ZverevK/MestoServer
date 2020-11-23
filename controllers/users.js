@@ -23,16 +23,40 @@ module.exports.getUser = (req, res) => {
     });
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res) => {
+  const pattern = new RegExp(/^[A-Za-z0-9]{8,}$/);
   const {
     name, about, avatar, email, password,
   } = req.body;
+  if (!pattern.test(password)) {
+    return res.status(400).send({ message: 'Пороль должен содержать заглавные и прописные буквы, цифры и состоять из не менее, чем 8 знаков' });
+  }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(200).send({ user }))
-    .catch((err) => res.status(400).send({ message: `Данные не отправлены ${err}` }));
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Проверьте правильность данных' });
+      }
+      return res.status(200).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+      });
+    })
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: `Ошибка валидации ${err.message}` });
+      }
+      if (err.name === 'MongoError' && err.code === 11000) {
+        return res.status(409).send({ message: 'Данный email занят' });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.login = (req, res) => {
