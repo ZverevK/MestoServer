@@ -1,5 +1,8 @@
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+
+const { JWT = 'dev-secret' } = process.env;
 
 module.exports.getUsers = (req, res) => {
   User.find({})
@@ -30,4 +33,22 @@ module.exports.createUser = (req, res) => {
     }))
     .then((user) => res.status(200).send({ user }))
     .catch((err) => res.status(400).send({ message: `Данные не отправлены ${err}` }));
+};
+
+module.exports.login = (req, res) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        JWT,
+        { expiresIn: '7d' },
+      );
+      res.send({ token });
+    })
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
 };
