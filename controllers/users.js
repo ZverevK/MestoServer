@@ -25,7 +25,7 @@ module.exports.getUser = (req, res) => {
 
 // eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res) => {
-  const pattern = new RegExp(/^[A-Za-z0-9]{8,}$/);
+  const pattern = new RegExp(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}/);
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -68,7 +68,12 @@ module.exports.login = (req, res) => {
         JWT,
         { expiresIn: '7d' },
       );
-      res.send({ token });
+      res
+        .cookie('jwt', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSate: true,
+        });
     })
     .catch((err) => {
       res
