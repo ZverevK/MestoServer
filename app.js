@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
-const { login, createUser } = require('./routes/users');
+const { login, createUser } = require('./controllers/users');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -18,8 +18,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/cards', cards);
 app.use('/users', users);
-app.use('/signup', createUser);
-app.use('/signup', login);
+app.post('/signup', createUser);
+app.post('/signup', login);
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемые данные не найдены' });
 });
