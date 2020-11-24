@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/cards', cards);
 app.use('/users', users);
 app.post('/signup', createUser);
-app.post('/signup', login);
+app.post('/signin', login);
 app.use((req, res) => {
   res.status(404).send({ message: 'Запрашиваемые данные не найдены' });
 });
