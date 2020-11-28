@@ -7,14 +7,21 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndRemove(req.params.id).orFail(new Error('NotValidId'))
     .then((data) => {
-      if (!data) {
-        return res.status(404).send({ message: 'Карточка не найдена' });
+      if (data.owner.toString() !== req.user._id) {
+        return res.status(403).send({ message: 'Можно удалять только свои карточки' });
       }
       return res.status(200).send(data);
     })
-    .catch((err) => res.status(400).send({ message: `Ошибка клиента ${err}` }));
+    .catch((err) => {
+      if (err.message === 'NotValidId') {
+        return res.status(404).send({ message: 'Такой карточки нет!' });
+      } if (err.name === 'CastError') {
+        return res.status(400).send({ message: `Ошибка валидации id карточки ${req.params.id}` });
+      }
+      return res.status(500).send({ message: err.message });
+    });
 };
 
 module.exports.createCard = (req, res) => {
