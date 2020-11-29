@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const { JWT = 'dev-secret' } = process.env;
+const { JWT_SECRET, NODE_ENV } = process.env;
 
 // eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
   let payload;
 
   try {
-    payload = jwt.verify(token, JWT);
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key');
   } catch (err) {
     return res
       .status(401)
