@@ -21,7 +21,7 @@ module.exports.getUser = (req, res, next) => {
       throw new NotFoundError('Пользователь не найден');
     })
     .then((data) => res.status(200).send(data))
-    .catch(next);
+    .catch((err) => next(err));
 };
 
 // eslint-disable-next-line consistent-return
