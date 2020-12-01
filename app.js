@@ -7,6 +7,8 @@ const { celebrate, Joi, errors } = require('celebrate');
 const cards = require('./routes/cards');
 const users = require('./routes/users');
 const auth = require('./middlewares/auth');
+const url = require('./regExp/url');
+const password = require('./regExp/password');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
 
@@ -41,9 +43,9 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required(),
+    avatar: Joi.string().required().pattern(url),
     email: Joi.string().required().email(),
-    password: Joi.string().required(),
+    password: Joi.string().required().pattern(password),
   }),
 }), createUser);
 
@@ -61,10 +63,6 @@ app.use((err, req, res, next) => {
   res
     .status(statusCode)
     .send({ message: statusCode === 500 ? 'На сервере произошла ошибка' : message });
-});
-
-app.use('/', (req, res) => {
-  res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
 app.listen(PORT);

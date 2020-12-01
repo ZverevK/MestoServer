@@ -1,7 +1,7 @@
 {
   "name": "mestoserver",
   "version": "1.0.0",
-  "description": "sprint 12 practice",
+  "description": "sprint 15 practice",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -21,7 +21,6 @@
     "eslint": "^7.11.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
-    "jest": "^26.6.3",
     "nodemon": "^2.0.6"
   },
   "dependencies": {
@@ -32,6 +31,7 @@
     "express": "^4.17.1",
     "express-winston": "^4.0.5",
     "joi": "^17.3.0",
+    "joi-objectid": "^3.0.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.13",
     "validator": "^13.1.17",

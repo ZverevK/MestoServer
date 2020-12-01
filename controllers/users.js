@@ -17,13 +17,11 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
-    .then((data) => {
-      if (!data) {
-        return next(new NotFoundError('Пользователь с таким id не найдён'));
-      }
-      return res.status(200).send(data);
+    .orFail(() => {
+      throw new NotFoundError('Пользователь не найден');
     })
-    .catch((err) => next(new BadRequestError(`Неверный id ${err.message}`)));
+    .then((data) => res.status(200).send(data))
+    .catch(next);
 };
 
 // eslint-disable-next-line consistent-return
@@ -62,7 +60,6 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      // создадим токен
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
