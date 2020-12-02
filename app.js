@@ -11,6 +11,7 @@ const url = require('./regExp/url');
 const password = require('./regExp/password');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { login, createUser } = require('./controllers/users');
+const NotFoundError = require('./errors/not-found-error');
 
 const app = express();
 const { PORT = 3000 } = process.env;
@@ -56,6 +57,10 @@ app.use('/users', users);
 app.use(errorLogger);
 
 app.use(errors());
+
+app.use('/', () => {
+  throw new NotFoundError('Запрашиваемый ресурс не найден');
+});
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

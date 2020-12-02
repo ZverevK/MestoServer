@@ -9,9 +9,13 @@ router.post('/', celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
     link: Joi.string().required().pattern(url),
-    owner: Joi.objectId(),
+    id: Joi.objectId(),
   }),
 }), createCard);
-router.delete('/:id', deleteCard);
+router.delete('/:id', celebrate({
+  body: Joi.object().keys({
+    id: Joi.objectId(),
+  }),
+}), deleteCard);
 
 module.exports = router;
