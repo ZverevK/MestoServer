@@ -22,6 +22,8 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'CastError') {
         return next(new ServerError());
+      } if (res.statusCode === 400) {
+        return next(new BadRequestError('Неверный запрос'));
       }
       return next(err);
     });
