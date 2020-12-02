@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
-const AutharizationError = require('../errors/autharization-error');
+const AuthorizationError = require('../errors/authorization-error');
 const ConflictError = require('../errors/conflict-error');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
@@ -66,5 +66,5 @@ module.exports.login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch((err) => next(new AutharizationError(`${err.message}`)));
+    .catch((err) => next(new AuthorizationError(`${err.message}`)));
 };

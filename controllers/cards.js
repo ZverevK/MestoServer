@@ -11,7 +11,7 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id).orFail(new Error('NotValidId'))
+  Card.findByIdAndRemove(req.params.id).orFail(new BadRequestError(`Неверный запрос ${req.params.id}`))
     .then((data) => {
       if (data.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Нельзя удалить чужую карточку');
@@ -21,8 +21,6 @@ module.exports.deleteCard = (req, res, next) => {
     .catch((err) => {
       if (err.message === 'NotValidId') {
         return next(new NotFoundError(`Карточка не найдена ${req.params.id}`));
-      } if (err.name === 'CastError') {
-        return next(new BadRequestError(`Неверный запрос ${req.params.id}`));
       }
       return next(err);
     });
