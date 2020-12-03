@@ -3,7 +3,6 @@ const Card = require('../models/card');
 const ForbiddenError = require('../errors/forbidden-error');
 const NotFoundError = require('../errors/not-found-error');
 const BadRequestError = require('../errors/bad-request-error');
-const ServerError = require('../errors/server-error');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -12,18 +11,25 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.id).orFail(new NotFoundError(`Карточка не найдена ${req.params.id}`))
+  Card.findById(req.params.id).orFail(new NotFoundError(`Карточка не найдена ${req.params.id}`))
     .then((data) => {
       if (data.owner.toString() !== req.user._id) {
         throw new ForbiddenError('Нельзя удалить чужую карточку');
+      } else {
+        Card.findByIdAndRemove(req.params.id)
+          // eslint-disable-next-line arrow-body-style
+          .then((card) => {
+            return res.status(200).send(card);
+          })
+          // eslint-disable-next-line arrow-body-style
+          .catch((err) => {
+            return next(err);
+          });
       }
-      return res.status(200).send(data);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new ServerError());
-      } if (res.statusCode === 400) {
-        return next(new BadRequestError('Неверный запрос'));
+      if (err.name === 'CastError' || res.statusCode === 400) {
+        return next(new BadRequestError(`Неверный запрос ${err.message}`));
       }
       return next(err);
     });
