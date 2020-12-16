@@ -2,43 +2,40 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
-const { JWT = 'dev-secret' } = process.env;
+const AuthorizationError = require('../errors/authorization-error');
+const ConflictError = require('../errors/conflict-error');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequestError = require('../errors/bad-request-error');
 
-module.exports.getUsers = (req, res) => {
+const { NODE_ENV, JWT_SECRET } = process.env;
+
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((data) => res.status(200).send(data))
-    .catch((err) => res.status(400).send({ message: `Неверный запрос ${err}` }));
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
-    .then((data) => {
-      if (!data) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
-      }
-      return res.status(200).send(data);
+    .orFail(() => {
+      throw new NotFoundError('Пользователь не найден');
     })
-    .catch((err) => {
-      res.status(400).send({ message: `Неверный запрос ${err}` });
-    });
+    .then((data) => res.status(200).send(data))
+    .catch((err) => next(err));
 };
 
 // eslint-disable-next-line consistent-return
-module.exports.createUser = (req, res) => {
-  const pattern = new RegExp(/(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}/);
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!pattern.test(password)) {
-    return res.status(400).send({ message: 'Пороль должен содержать заглавные и прописные буквы, цифры и состоять из не менее, чем 8 знаков' });
-  }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'Проверьте правильность данных' });
+        return next(new NotFoundError('Проверьте правильность данных'));
       }
       return res.status(200).send({
         _id: user._id,
@@ -50,29 +47,24 @@ module.exports.createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: `Ошибка валидации ${err.message}` });
+        return next(new BadRequestError(`Ошибка валидации ${err.message}`));
       }
       if (err.name === 'MongoError' && err.code === 11000) {
-        return res.status(409).send({ message: 'Данный email занят' });
+        return next(new ConflictError('Данный email уже используется'));
       }
-      return res.status(500).send({ message: err.message });
+      return next(err);
     });
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        JWT,
-        { expiresIn: '7d' },
+        NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
       );
       res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch((err) => next(new AuthorizationError(`${err.message}`)));
 };
